@@ -8,8 +8,22 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/robermad1986/epub-vscode-extension"
+		"url": "https://github.com/robermad1986/epub-editor-vscode.git"
 	},
+	"bugs": {
+		"url": "https://github.com/robermad1986/epub-editor-vscode/issues"
+	},
+	"homepage": "https://github.com/robermad1986/epub-editor-vscode#readme",
+	"keywords": [
+		"epub",
+		"ebook",
+		"editor",
+		"ai",
+		"publishing",
+		"virtual-file-system",
+		"openrouter",
+		"writing-assistant"
+	],
 	"engines": {
 		"vscode": "^1.80.0",
 		"python": ">=3.7.0"

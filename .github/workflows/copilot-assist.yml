@@ -1,0 +1,165 @@
+name: 🤖 GitHub Copilot Issue Assistant
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  copilot-assist:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🏷️ Auto-label issues
+        if: github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = issue.title.toLowerCase();
+            const body = issue.body.toLowerCase();
+            
+            // Auto-assign labels based on content
+            const labels = [];
+            
+            if (title.includes('[bug]') || body.includes('error') || body.includes('crash')) {
+              labels.push('bug');
+            }
+            
+            if (title.includes('[feature]') || body.includes('feature request')) {
+              labels.push('enhancement');
+            }
+            
+            if (title.includes('[ai]') || body.includes('ai model') || body.includes('openrouter')) {
+              labels.push('ai');
+            }
+            
+            if (body.includes('epub') || body.includes('virtual folder')) {
+              labels.push('epub-core');
+            }
+            
+            if (body.includes('python') || body.includes('api key')) {
+              labels.push('backend');
+            }
+            
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: labels
+              });
+            }
+      
+      - name: 🤖 Welcome new contributors
+        if: github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            
+            // Check if this is the user's first issue
+            const { data: userIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              creator: issue.user.login,
+              state: 'all'
+            });
+            
+            if (userIssues.length === 1) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `👋 Welcome to EPUB Editor! Thanks for your first issue.
+
+🤖 **GitHub Copilot is helping us respond quickly** to issues and feature requests.
+
+📋 **What happens next:**
+- We'll review your issue within 24-48 hours
+- For bugs: we'll attempt to reproduce and provide a fix
+- For features: we'll evaluate feasibility and add to our roadmap
+
+🚀 **Quick resources:**
+- [User Guide](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/readme.md)
+- [AI Setup Guide](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/AI-USER-GUIDE.md)
+- [Changelog](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/CHANGELOG.md)
+
+Feel free to provide additional details if needed!`
+              });
+            }
+
+  triage-ai-issues:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'ai')
+    permissions:
+      issues: write
+      contents: read
+    
+    steps:
+      - name: 🤖 AI Issue Triage
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body.toLowerCase();
+            
+            let comment = "🤖 **AI Issue Detected** - GitHub Copilot Analysis:\n\n";
+            
+            // Analyze common AI issues
+            if (body.includes('api key') && body.includes('error')) {
+              comment += `🔑 **API Key Issue Detected**
+              
+Common solutions:
+1. Verify API key is correctly set: \`Ctrl+Shift+P\` → "EPUB AI: Configure API Key"
+2. Test connection: \`Ctrl+Shift+P\` → "EPUB AI: Test AI Connection"
+3. Check OpenRouter account has credits/free tier access
+4. Ensure API key has Marketplace permissions
+
+`;
+            }
+            
+            if (body.includes('python') && (body.includes('not found') || body.includes('command not found'))) {
+              comment += `🐍 **Python Installation Issue**
+              
+Required setup:
+1. Install Python 3.7+ from [python.org](https://python.org)
+2. Verify installation: \`python3 --version\` in terminal
+3. Restart VS Code after Python installation
+4. Ensure Python is in your system PATH
+
+`;
+            }
+            
+            if (body.includes('timeout') || body.includes('slow')) {
+              comment += `⏱️ **Performance Issue**
+              
+Try these optimizations:
+1. Use shorter text selections (< 1000 characters)
+2. Switch to faster model: "EPUB AI: Select AI Model" → Qwen3 8B
+3. Check internet connection stability
+4. Try during off-peak hours for better API response
+
+`;
+            }
+            
+            comment += `\n📚 **Additional Resources:**
+- [Complete AI Setup Guide](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/AI-USER-GUIDE.md)
+- [Troubleshooting Section](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/AI-USER-GUIDE.md#troubleshooting)
+
+We'll investigate further and provide a personalized solution soon!`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: comment
+            });
