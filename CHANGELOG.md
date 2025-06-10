@@ -28,6 +28,13 @@ All notable changes to the EPUB Editor extension will be documented in this file
 - **Cleaner Interface**: Less visual clutter while maintaining important feedback
 - **Better UX**: Notifications appear when needed but don't block the editing flow
 
+#### **🔧 Hotfix (Same Day)**
+- **🐛 Editor Context Menu**: Fixed missing "Open as Virtual Folder" option when EPUB files are opened directly in editor
+  - Added `editor/context` menu contribution alongside existing `explorer/context` menu
+  - Improves discoverability for users who open EPUB files directly (File → Open)
+  - Identified through user testing and resolved with GitHub Copilot assistance
+  - **Issue**: [Context menu option missing](https://github.com/robermad1986/epub-editor-vscode/issues)
+
 ## [0.1.7] - 2025-06-09
 ### 🧠 Major Feature: AI Integration with Multiple Model Support
 
