@@ -1,0 +1,116 @@
+name: 🤖 Auto-Label Issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    
+    steps:
+      - name: 🏷️ Auto-label based on content
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const title = issue.title.toLowerCase();
+            const body = (issue.body || '').toLowerCase();
+            
+            const labels = [];
+            
+            // Detect issue type
+            if (title.includes('[bug]') || title.includes('bug') || body.includes('error') || body.includes('crash') || body.includes('not working')) {
+              labels.push('bug');
+            }
+            
+            if (title.includes('[feature]') || title.includes('feature') || body.includes('feature request') || body.includes('enhancement')) {
+              labels.push('enhancement');
+            }
+            
+            if (title.includes('[ai]') || title.includes('ai') || body.includes('ai model') || body.includes('openrouter') || body.includes('api key')) {
+              labels.push('ai');
+            }
+            
+            if (body.includes('epub') || body.includes('virtual folder') || body.includes('file system')) {
+              labels.push('epub-core');
+            }
+            
+            if (body.includes('python') || body.includes('backend')) {
+              labels.push('backend');
+            }
+            
+            // Apply labels
+            if (labels.length > 0) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  labels: labels
+                });
+                console.log(`Added labels: ${labels.join(', ')}`);
+              } catch (error) {
+                console.log('Error adding labels:', error.message);
+              }
+            }
+
+      - name: 🤖 AI Issue Auto-Response
+        if: contains(github.event.issue.title, 'ai') || contains(github.event.issue.title, 'AI') || contains(github.event.issue.body, 'api key') || contains(github.event.issue.body, 'openrouter')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const body = (issue.body || '').toLowerCase();
+            
+            let response = "🤖 **AI Issue Auto-Response**\n\nThanks for reporting this AI-related issue! Here are some quick troubleshooting steps:\n\n";
+            
+            if (body.includes('api key')) {
+              response += `🔑 **API Key Issues:**
+1. Verify API key: \`Ctrl+Shift+P\` → "EPUB AI: Configure API Key"
+2. Test connection: \`Ctrl+Shift+P\` → "EPUB AI: Test AI Connection"
+3. Check your OpenRouter account has credits/free tier access
+4. Ensure API key has correct permissions
+
+`;
+            }
+            
+            if (body.includes('python')) {
+              response += `🐍 **Python Issues:**
+1. Ensure Python 3.7+ is installed: \`python3 --version\`
+2. Restart VS Code after Python installation
+3. Check Python is in your system PATH
+
+`;
+            }
+            
+            if (body.includes('timeout') || body.includes('slow')) {
+              response += `⏱️ **Performance Issues:**
+1. Try shorter text selections (< 1000 characters)
+2. Switch to faster model: "EPUB AI: Select AI Model" → Qwen3 8B
+3. Check internet connection stability
+
+`;
+            }
+            
+            response += `📚 **Resources:**
+- [Complete AI Setup Guide](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/AI-USER-GUIDE.md)
+- [Troubleshooting](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/AI-USER-GUIDE.md#troubleshooting)
+
+I'll review this personally and provide a detailed solution soon! 🚀`;
+            
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: response
+              });
+            } catch (error) {
+              console.log('Error creating comment:', error.message);
+            }
