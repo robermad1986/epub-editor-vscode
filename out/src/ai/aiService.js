@@ -12,8 +12,6 @@ class AIService {
         this.pythonPath = this.detectPythonPath();
     }
     detectPythonPath() {
-        // Intentar diferentes rutas de Python comunes
-        const possiblePaths = ['python3', 'python', '/usr/bin/python3', '/usr/local/bin/python3'];
         // En producción, usar 'python3' como predeterminado
         // TODO: Implementar detección automática más robusta si es necesario
         return 'python3';
@@ -169,17 +167,90 @@ class AIService {
             language
         });
     }
-    async testConnection() {
+    async testConnectionDetailed() {
         const apiKey = await this.getApiKey();
         if (!apiKey) {
-            return false;
+            return {
+                success: false,
+                error: 'API Key de OpenRouter requerida',
+                errorType: 'missing_api_key'
+            };
         }
-        const testResponse = await this.processText({
-            text: 'Test',
-            action: 'improve',
-            language: 'es'
+        const selectedModel = this.getSelectedModel();
+        return new Promise((resolve) => {
+            const args = [
+                this.scriptPath,
+                '--api-key', apiKey,
+                '--action', 'test-connection',
+                '--model', selectedModel
+            ];
+            console.log('[AI Service] Testing connection with detailed response:', args);
+            const pythonProcess = (0, child_process_1.spawn)(this.pythonPath, args, {
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+            let stdout = '';
+            let stderr = '';
+            pythonProcess.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+            pythonProcess.stderr.on('data', (data) => {
+                stderr += data.toString();
+            });
+            pythonProcess.on('close', (code) => {
+                if (code !== 0) {
+                    console.error('[AI Service] Test connection process error:', stderr);
+                    resolve({
+                        success: false,
+                        error: `Error ejecutando test de conexión: ${stderr || 'Proceso terminado con código ' + code}`,
+                        errorType: 'process_error'
+                    });
+                    return;
+                }
+                try {
+                    const response = JSON.parse(stdout);
+                    console.log('[AI Service] Test connection detailed response:', response);
+                    if (response.success) {
+                        resolve({ success: true });
+                    }
+                    else {
+                        resolve({
+                            success: false,
+                            error: response.error || 'Error desconocido',
+                            errorType: response.error_type || 'unknown_error'
+                        });
+                    }
+                }
+                catch (error) {
+                    console.error('[AI Service] Error parsing test connection response:', error);
+                    resolve({
+                        success: false,
+                        error: 'Error procesando respuesta del test de conexión',
+                        errorType: 'parse_error'
+                    });
+                }
+            });
+            pythonProcess.on('error', (error) => {
+                console.error('[AI Service] Test connection process spawn error:', error);
+                resolve({
+                    success: false,
+                    error: `Error iniciando proceso Python: ${error.message}`,
+                    errorType: 'spawn_error'
+                });
+            });
+            // Timeout de 30 segundos para test de conexión
+            setTimeout(() => {
+                pythonProcess.kill();
+                resolve({
+                    success: false,
+                    error: 'Timeout: El test de conexión tardó demasiado tiempo',
+                    errorType: 'timeout'
+                });
+            }, 30000);
         });
-        return testResponse.success;
+    }
+    async testConnection() {
+        const result = await this.testConnectionDetailed();
+        return result.success;
     }
     async getAvailableModels() {
         const apiKey = await this.getApiKey();
@@ -212,7 +283,7 @@ class AIService {
                     const response = JSON.parse(stdout);
                     resolve(response);
                 }
-                catch (error) {
+                catch (_error) {
                     resolve({ success: false, error: 'Error parsing models response' });
                 }
             });

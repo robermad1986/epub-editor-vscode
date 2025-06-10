@@ -217,12 +217,30 @@ class AICommands {
             title: '🧪 Probando conexión con IA...',
             cancellable: false
         }, async () => {
-            const isConnected = await this.aiService.testConnection();
-            if (isConnected) {
+            const result = await this.aiService.testConnectionDetailed();
+            if (result.success) {
                 vscode.window.setStatusBarMessage('✅ Conexión con IA exitosa', 4000);
             }
             else {
-                vscode.window.showErrorMessage('❌ No se pudo conectar con IA. Verifica tu API Key.');
+                // Mostrar mensaje de error específico según el tipo
+                let errorMessage = '❌ No se pudo conectar con IA.';
+                switch (result.errorType) {
+                    case 'invalid_api_key':
+                        errorMessage = '🔑 API Key inválida. Ve a "EPUB AI: Configurar API Key" para configurarla correctamente.';
+                        break;
+                    case 'connection_error':
+                        errorMessage = '🌐 Error de conexión. Verifica tu internet y que OpenRouter.ai esté disponible.';
+                        break;
+                    case 'missing_api_key':
+                        errorMessage = '🔑 API Key requerida. Ve a "EPUB AI: Configurar API Key" para configurarla.';
+                        break;
+                    case 'timeout':
+                        errorMessage = '⏱️ Timeout: El test de conexión tardó demasiado. Intenta nuevamente.';
+                        break;
+                    default:
+                        errorMessage = `❌ Error: ${result.error}`;
+                }
+                vscode.window.showErrorMessage(errorMessage);
             }
         });
     }

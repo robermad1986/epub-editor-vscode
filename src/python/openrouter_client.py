@@ -225,6 +225,46 @@ Texto a procesar:
         """Retorna la lista de modelos gratuitos disponibles"""
         return cls.FREE_MODELS
     
+    def test_connection(self) -> Dict[str, Any]:
+        """Prueba la conexión con OpenRouter API con un request mínimo"""
+        test_data = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": "Hello"}],
+            "max_tokens": 10,
+            "temperature": 0.1
+        }
+        
+        response = self._make_request("chat/completions", test_data)
+        
+        if "error" in response:
+            # Analizar el tipo de error para dar mejor feedback
+            error_msg = response["error"]
+            if "401" in error_msg or "Unauthorized" in error_msg or "Invalid API" in error_msg:
+                return {
+                    "success": False,
+                    "error": "API Key inválida. Verifica que tu clave de OpenRouter sea correcta.",
+                    "error_type": "invalid_api_key"
+                }
+            elif "timeout" in error_msg.lower() or "connection" in error_msg.lower():
+                return {
+                    "success": False,
+                    "error": "Error de conexión. Verifica tu internet y que OpenRouter.ai esté disponible.",
+                    "error_type": "connection_error"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"Error de OpenRouter API: {error_msg}",
+                    "error_type": "api_error"
+                }
+        
+        return {
+            "success": True,
+            "message": "Conexión exitosa con OpenRouter API",
+            "model": self.model,
+            "model_info": self.get_current_model_info()
+        }
+    
     def get_current_model_info(self) -> Dict[str, Any]:
         """Retorna información del modelo actual"""
         return self.FREE_MODELS.get(self.model, {
@@ -234,22 +274,32 @@ Texto a procesar:
             "description": f"Modelo: {self.model}"
         })
 
-def extract_content(response: Dict[str, Any]) -> str:
-    """Extrae el contenido de la respuesta de OpenRouter"""
+def extract_content(response: Dict[str, Any]) -> Dict[str, Any]:
+    """Extrae el contenido de la respuesta de OpenRouter y maneja errores"""
     if "error" in response:
-        return f"Error: {response['error']}"
+        return {
+            "success": False,
+            "error": response["error"]
+        }
     
     try:
-        return response["choices"][0]["message"]["content"].strip()
+        content = response["choices"][0]["message"]["content"].strip()
+        return {
+            "success": True,
+            "content": content
+        }
     except (KeyError, IndexError):
-        return "Error: Invalid response format"
+        return {
+            "success": False,
+            "error": "Invalid response format from OpenRouter API"
+        }
 
 def main():
     """Función principal para uso desde línea de comandos"""
     parser = argparse.ArgumentParser(description="OpenRouter AI Client for EPUB Editor")
     parser.add_argument("--api-key", required=True, help="OpenRouter API Key")
     parser.add_argument("--action", required=True, 
-                       choices=["improve", "correct", "translate", "expand", "summarize", "custom", "list-models"],
+                       choices=["improve", "correct", "translate", "expand", "summarize", "custom", "list-models", "test-connection"],
                        help="Action to perform")
     parser.add_argument("--text", help="Text to process")
     parser.add_argument("--language", default="es", help="Language code (default: es)")
@@ -270,14 +320,28 @@ def main():
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return
     
+    # Acción especial para probar conexión
+    if args.action == "test-connection":
+        if not args.api_key or len(args.api_key.strip()) < 10:
+            error_msg = "API Key de OpenRouter inválida o faltante para probar conexión"
+            result = {"success": False, "error": error_msg, "error_type": "invalid_api_key"}
+            print(json.dumps(result, ensure_ascii=False))
+            return
+        
+        client = OpenRouterClient(args.api_key, args.model)
+        result = client.test_connection()
+        print(json.dumps(result, ensure_ascii=False))
+        return
+    
     # Validar API Key para otras acciones
-    if not args.api_key or len(args.api_key) < 10:
-        print(json.dumps({"error": "Invalid API Key"}))
+    if not args.api_key or len(args.api_key.strip()) < 10:
+        error_msg = "API Key de OpenRouter inválida o faltante. Debe tener al menos 10 caracteres y comenzar con 'sk-or-v1-'"
+        print(json.dumps({"success": False, "error": error_msg}, ensure_ascii=False))
         sys.exit(1)
     
-    # Validar que el texto sea requerido para acciones que no sean list-models
-    if not args.text:
-        print(json.dumps({"error": "Text is required for this action"}))
+    # Validar que el texto sea requerido para acciones que no sean list-models o test-connection
+    if args.action not in ["list-models", "test-connection"] and not args.text:
+        print(json.dumps({"success": False, "error": "Text is required for this action"}, ensure_ascii=False))
         sys.exit(1)
     
     client = OpenRouterClient(args.api_key, args.model)
@@ -305,15 +369,26 @@ def main():
         
         if response:
             # Extraer contenido y devolver resultado
-            content = extract_content(response)
-            result = {
-                "success": True,
-                "content": content,
-                "original_text": args.text,
-                "action": args.action,
-                "model": args.model,
-                "model_info": client.get_current_model_info()
-            }
+            extracted = extract_content(response)
+            
+            if not extracted["success"]:
+                # Error en la respuesta de la API
+                result = {
+                    "success": False,
+                    "error": extracted["error"],
+                    "action": args.action,
+                    "model": args.model
+                }
+            else:
+                # Respuesta exitosa
+                result = {
+                    "success": True,
+                    "content": extracted["content"],
+                    "original_text": args.text,
+                    "action": args.action,
+                    "model": args.model,
+                    "model_info": client.get_current_model_info()
+                }
             
             print(json.dumps(result, ensure_ascii=False))
         

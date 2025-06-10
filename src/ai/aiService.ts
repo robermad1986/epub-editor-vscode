@@ -31,9 +31,6 @@ export class AIService {
     }
 
     private detectPythonPath(): string {
-        // Intentar diferentes rutas de Python comunes
-        const possiblePaths = ['python3', 'python', '/usr/bin/python3', '/usr/local/bin/python3'];
-        
         // En producción, usar 'python3' como predeterminado
         // TODO: Implementar detección automática más robusta si es necesario
         return 'python3';
@@ -167,7 +164,7 @@ export class AIService {
         });
     }
 
-    async improveText(text: string, language: string = 'es'): Promise<AIResponse> {
+    async improveText(text: string, language = 'es'): Promise<AIResponse> {
         return this.processText({
             text,
             action: 'improve',
@@ -175,7 +172,7 @@ export class AIService {
         });
     }
 
-    async correctGrammar(text: string, language: string = 'es'): Promise<AIResponse> {
+    async correctGrammar(text: string, language = 'es'): Promise<AIResponse> {
         return this.processText({
             text,
             action: 'correct',
@@ -183,7 +180,7 @@ export class AIService {
         });
     }
 
-    async translateText(text: string, targetLanguage: string, sourceLanguage: string = 'auto'): Promise<AIResponse> {
+    async translateText(text: string, targetLanguage: string, sourceLanguage = 'auto'): Promise<AIResponse> {
         return this.processText({
             text,
             action: 'translate',
@@ -192,7 +189,7 @@ export class AIService {
         });
     }
 
-    async expandParagraph(text: string, language: string = 'es'): Promise<AIResponse> {
+    async expandParagraph(text: string, language = 'es'): Promise<AIResponse> {
         return this.processText({
             text,
             action: 'expand',
@@ -200,7 +197,7 @@ export class AIService {
         });
     }
 
-    async summarizeText(text: string, language: string = 'es'): Promise<AIResponse> {
+    async summarizeText(text: string, language = 'es'): Promise<AIResponse> {
         return this.processText({
             text,
             action: 'summarize',
@@ -208,7 +205,7 @@ export class AIService {
         });
     }
 
-    async customPrompt(text: string, prompt: string, language: string = 'es'): Promise<AIResponse> {
+    async customPrompt(text: string, prompt: string, language = 'es'): Promise<AIResponse> {
         return this.processText({
             text,
             action: 'custom',
@@ -217,20 +214,102 @@ export class AIService {
         });
     }
 
-    async testConnection(): Promise<boolean> {
+    async testConnectionDetailed(): Promise<{success: boolean, error?: string, errorType?: string}> {
         const apiKey = await this.getApiKey();
         
         if (!apiKey) {
-            return false;
+            return {
+                success: false,
+                error: 'API Key de OpenRouter requerida',
+                errorType: 'missing_api_key'
+            };
         }
 
-        const testResponse = await this.processText({
-            text: 'Test',
-            action: 'improve',
-            language: 'es'
-        });
+        const selectedModel = this.getSelectedModel();
 
-        return testResponse.success;
+        return new Promise((resolve) => {
+            const args = [
+                this.scriptPath,
+                '--api-key', apiKey,
+                '--action', 'test-connection',
+                '--model', selectedModel
+            ];
+
+            console.log('[AI Service] Testing connection with detailed response:', args);
+
+            const pythonProcess = spawn(this.pythonPath, args, {
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+
+            let stdout = '';
+            let stderr = '';
+
+            pythonProcess.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            pythonProcess.stderr.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            pythonProcess.on('close', (code) => {
+                if (code !== 0) {
+                    console.error('[AI Service] Test connection process error:', stderr);
+                    resolve({
+                        success: false,
+                        error: `Error ejecutando test de conexión: ${stderr || 'Proceso terminado con código ' + code}`,
+                        errorType: 'process_error'
+                    });
+                    return;
+                }
+
+                try {
+                    const response = JSON.parse(stdout);
+                    console.log('[AI Service] Test connection detailed response:', response);
+                    
+                    if (response.success) {
+                        resolve({success: true});
+                    } else {
+                        resolve({
+                            success: false,
+                            error: response.error || 'Error desconocido',
+                            errorType: response.error_type || 'unknown_error'
+                        });
+                    }
+                } catch (error) {
+                    console.error('[AI Service] Error parsing test connection response:', error);
+                    resolve({
+                        success: false,
+                        error: 'Error procesando respuesta del test de conexión',
+                        errorType: 'parse_error'
+                    });
+                }
+            });
+
+            pythonProcess.on('error', (error) => {
+                console.error('[AI Service] Test connection process spawn error:', error);
+                resolve({
+                    success: false,
+                    error: `Error iniciando proceso Python: ${error.message}`,
+                    errorType: 'spawn_error'
+                });
+            });
+
+            // Timeout de 30 segundos para test de conexión
+            setTimeout(() => {
+                pythonProcess.kill();
+                resolve({
+                    success: false,
+                    error: 'Timeout: El test de conexión tardó demasiado tiempo',
+                    errorType: 'timeout'
+                });
+            }, 30000);
+        });
+    }
+
+    async testConnection(): Promise<boolean> {
+        const result = await this.testConnectionDetailed();
+        return result.success;
     }
 
     async getAvailableModels(): Promise<any> {
@@ -271,7 +350,7 @@ export class AIService {
                 try {
                     const response = JSON.parse(stdout);
                     resolve(response);
-                } catch (error) {
+                } catch (_error) {
                     resolve({ success: false, error: 'Error parsing models response' });
                 }
             });
