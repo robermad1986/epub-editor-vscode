@@ -150,6 +150,11 @@
 			],
 			"editor/context": [
 				{
+					"command": "epub.openAsFolder",
+					"when": "resourceExtname == .epub && resourceScheme == file",
+					"group": "navigation"
+				},
+				{
 					"command": "epub.ai.improveText",
 					"when": "editorHasSelection && resourceScheme == epub",
 					"group": "epub-ai@1"

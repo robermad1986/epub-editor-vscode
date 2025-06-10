@@ -32,19 +32,28 @@ function activate(context) {
                 console.log(`[EPUB] Using file from context: ${epubPath}`);
             }
             else {
-                // Otherwise, show file picker dialog
-                const options = {
-                    canSelectMany: false,
-                    openLabel: 'Open EPUB File',
-                    filters: {
-                        'EPUB files': ['epub']
-                    }
-                };
-                const fileUri = await vscode.window.showOpenDialog(options);
-                if (!fileUri || !fileUri[0]) {
-                    return; // User cancelled
+                // Try to get the currently active editor's document as fallback
+                const activeEditor = vscode.window.activeTextEditor;
+                if (activeEditor && activeEditor.document.uri.scheme === 'file' &&
+                    activeEditor.document.uri.fsPath.toLowerCase().endsWith('.epub')) {
+                    epubPath = activeEditor.document.uri.fsPath;
+                    console.log(`[EPUB] Using active editor file: ${epubPath}`);
                 }
-                epubPath = fileUri[0].fsPath;
+                else {
+                    // Otherwise, show file picker dialog
+                    const options = {
+                        canSelectMany: false,
+                        openLabel: 'Open EPUB File',
+                        filters: {
+                            'EPUB files': ['epub']
+                        }
+                    };
+                    const fileUri = await vscode.window.showOpenDialog(options);
+                    if (!fileUri || !fileUri[0]) {
+                        return; // User cancelled
+                    }
+                    epubPath = fileUri[0].fsPath;
+                }
             }
             // Validate it's an EPUB file
             if (!epubPath.toLowerCase().endsWith('.epub')) {
