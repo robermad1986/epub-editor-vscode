@@ -1,0 +1,1 @@
+{"version":3,"file":"AbstractMarker.d.ts","sourceRoot":"","sources":["../../src/parser/AbstractMarker.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,iBAAiB,CAAC;AAE7C,8BAAsB,cAAc;IAChC,QAAQ,CAAC,IAAI,CAAC,MAAM,EAAE,UAAU,GAAG,IAAI;CAC1C"}

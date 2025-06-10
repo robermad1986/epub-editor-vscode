@@ -1,0 +1,9 @@
+node_modules/
+out/
+.vscode-test/
+*.min.js
+*.min.css
+*.log
+dist/
+build/
+vscode-extension-samples/

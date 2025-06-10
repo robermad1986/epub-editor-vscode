@@ -1,0 +1,23 @@
+import { SourceCode } from "./SourceCode.js";
+import { AbstractParser } from "./AbstractParser.js";
+export declare const DefaultOptions: {
+    separatorCharacters: string[];
+};
+export interface SeparatorParserOptions {
+    /**
+     * Recognize each characters as separator
+     * Example [".", "!", "?"]
+     */
+    separatorCharacters?: string[];
+}
+/**
+ * Separator parser
+ */
+export declare class SeparatorParser implements AbstractParser {
+    readonly options?: SeparatorParserOptions | undefined;
+    private separatorCharacters;
+    constructor(options?: SeparatorParserOptions | undefined);
+    test(sourceCode: SourceCode): boolean;
+    seek(sourceCode: SourceCode): void;
+}
+//# sourceMappingURL=SeparatorParser.d.ts.map

@@ -1,0 +1,326 @@
+{
+	"name": "epub-editor",
+	"displayName": "EPUB Editor",
+	"description": "Edit EPUB files directly in VS Code with virtual file system support",
+	"version": "0.1.8",
+	"publisher": "Pishu",
+	"private": true,
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/robermad1986/epub-vscode-extension"
+	},
+	"engines": {
+		"vscode": "^1.80.0",
+		"python": ">=3.7.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"main": "./out/src/extension",
+	"contributes": {
+		"languages": [
+			{
+				"id": "epub",
+				"aliases": [
+					"EPUB",
+					"epub"
+				],
+				"extensions": [
+					".epub"
+				],
+				"icon": {
+					"light": "./resources/icons/epub-file.svg",
+					"dark": "./resources/icons/epub-file.svg"
+				}
+			}
+		],
+		"commands": [
+			{
+				"command": "epub.openAsFolder",
+				"title": "Open as Virtual Folder",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.closeFile",
+				"title": "Close EPUB File",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.refresh",
+				"title": "Refresh EPUB",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.saveFile",
+				"title": "Save EPUB File",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.saveFileWithConfirmation",
+				"title": "Save EPUB File (with confirmation)",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.status",
+				"title": "EPUB Status",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.listModifiedFiles",
+				"title": "List Modified Files",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.showMetadata",
+				"title": "Show EPUB Metadata",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.createNew",
+				"title": "Create New EPUB",
+				"category": "EPUB"
+			},
+			{
+				"command": "epub.ai.improveText",
+				"title": "🧠 Mejorar texto con IA",
+				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.ai.correctGrammar",
+				"title": "✏️ Corregir ortografía y gramática",
+				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.ai.translateText",
+				"title": "🌐 Traducir texto",
+				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.ai.expandParagraph",
+				"title": "📝 Expandir párrafo",
+				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.ai.summarizeText",
+				"title": "📄 Resumir texto",
+				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.ai.configureApiKey",
+				"title": "🔑 Configurar API Key IA",
+				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.ai.testConnection",
+				"title": "🧪 Probar conexión IA",
+				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.ai.selectModel",
+				"title": "🤖 Seleccionar modelo IA",
+				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.ai.modelInfo",
+				"title": "ℹ️ Información del modelo",
+				"category": "EPUB AI"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "epub.openAsFolder",
+					"when": "resourceExtname == .epub",
+					"group": "navigation"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "epub.ai.improveText",
+					"when": "editorHasSelection && resourceScheme == epub",
+					"group": "epub-ai@1"
+				},
+				{
+					"command": "epub.ai.correctGrammar",
+					"when": "editorHasSelection && resourceScheme == epub",
+					"group": "epub-ai@2"
+				},
+				{
+					"command": "epub.ai.translateText",
+					"when": "editorHasSelection && resourceScheme == epub",
+					"group": "epub-ai@3"
+				},
+				{
+					"command": "epub.ai.expandParagraph",
+					"when": "editorHasSelection && resourceScheme == epub",
+					"group": "epub-ai@4"
+				},
+				{
+					"command": "epub.ai.summarizeText",
+					"when": "editorHasSelection && resourceScheme == epub",
+					"group": "epub-ai@5"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "epub.openAsFolder",
+					"when": "resourceExtname == .epub"
+				},
+				{
+					"command": "epub.closeFile",
+					"when": "workbenchState == workspace"
+				},
+				{
+					"command": "epub.refresh",
+					"when": "workbenchState == workspace"
+				},
+				{
+					"command": "epub.saveFile",
+					"when": "workbenchState == workspace"
+				},
+				{
+					"command": "epub.saveFileWithConfirmation",
+					"when": "workbenchState == workspace"
+				},
+				{
+					"command": "epub.status",
+					"when": "workbenchState == workspace"
+				},
+				{
+					"command": "epub.listModifiedFiles",
+					"when": "workbenchState == workspace"
+				},
+				{
+					"command": "epub.showMetadata",
+					"when": "workbenchState == workspace"
+				},
+				{
+					"command": "epub.createNew"
+				},
+				{
+					"command": "epub.ai.improveText"
+				},
+				{
+					"command": "epub.ai.correctGrammar"
+				},
+				{
+					"command": "epub.ai.translateText"
+				},
+				{
+					"command": "epub.ai.expandParagraph"
+				},
+				{
+					"command": "epub.ai.summarizeText"
+				},
+				{
+					"command": "epub.ai.configureApiKey"
+				},
+				{
+					"command": "epub.ai.testConnection"
+				},
+				{
+					"command": "epub.ai.selectModel"
+				},
+				{
+					"command": "epub.ai.modelInfo"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"command": "epub.saveFile",
+				"key": "ctrl+shift+s",
+				"mac": "cmd+shift+s",
+				"when": "workbenchState == workspace && resourceScheme == epub"
+			},
+			{
+				"command": "epub.status",
+				"key": "ctrl+shift+i",
+				"mac": "cmd+shift+i",
+				"when": "workbenchState == workspace && resourceScheme == epub"
+			}
+		],
+		"configuration": {
+			"title": "EPUB Editor",
+			"properties": {
+				"epub.ai.openrouterApiKey": {
+					"type": "string",
+					"default": "",
+					"description": "API Key de OpenRouter para funcionalidades de IA",
+					"markdownDescription": "Tu API Key de [OpenRouter](https://openrouter.ai) para usar las funcionalidades de IA. Se almacena de forma segura en VS Code."
+				},
+				"epub.ai.model": {
+					"type": "string",
+					"default": "google/gemini-2.0-flash-exp:free",
+					"description": "Modelo de IA a utilizar para las operaciones",
+					"enum": [
+						"google/gemini-2.0-flash-exp:free",
+						"nvidia/llama-3.1-nemotron-ultra-253b-v1:free",
+						"qwen/qwen3-235b-a22b:free",
+						"deepseek/deepseek-r1:free",
+						"microsoft/phi-4-reasoning-plus:free",
+						"nousresearch/hermes-3-llama-3.1-405b:free",
+						"qwen/qwen3-8b:free"
+					],
+					"enumDescriptions": [
+						"Gemini 2.0 Flash Experimental (1M contexto) - Más reciente de Google",
+						"Llama 3.1 Nemotron Ultra 253B (128K contexto) - El más grande (253B parámetros)",
+						"Qwen3 235B (256K contexto) - Segundo más grande (235B parámetros)",
+						"DeepSeek R1 (128K contexto) - Excelente razonamiento y capacidades avanzadas",
+						"Phi-4 Reasoning Plus (128K contexto) - Especializado en razonamiento complejo",
+						"Hermes 3 Llama 405B (128K contexto) - Ultra potente de 405B parámetros",
+						"Qwen3 8B (32K contexto) - Rápido con excelente balance velocidad/calidad"
+					]
+				},
+				"epub.ai.defaultLanguage": {
+					"type": "string",
+					"default": "es",
+					"description": "Idioma predeterminado para las operaciones de IA",
+					"enum": ["es", "en", "fr", "de", "it", "pt"],
+					"enumDescriptions": [
+						"Español",
+						"Inglés",
+						"Francés",
+						"Alemán",
+						"Italiano",
+						"Portugués"
+					]
+				},
+				"epub.ai.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Habilitar funcionalidades de IA en EPUB Editor"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint",
+		"textlint": "textlint",
+		"watch": "tsc -watch -p ./",
+		"package": "vsce package"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.13.0",
+		"@stylistic/eslint-plugin": "^2.9.0",
+		"@types/node": "^20",
+		"@types/vscode": "^1.73.0",
+		"@vscode/vsce": "^3.5.0",
+		"eslint": "^9.13.0",
+		"textlint": "^14.7.2",
+		"textlint-rule-preset-ja-spacing": "^2.4.3",
+		"textlint-rule-preset-ja-technical-writing": "^12.0.2",
+		"typescript": "^5.8.2",
+		"typescript-eslint": "^8.26.0"
+	},
+	"dependencies": {
+		"@types/jszip": "^3.4.0",
+		"@types/uuid": "^10.0.0",
+		"jszip": "^3.10.1",
+		"uuid": "^11.1.0"
+	},
+	"extensionDependencies": []
+}

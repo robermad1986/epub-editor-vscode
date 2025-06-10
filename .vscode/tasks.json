@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "textlint",
+      "type": "shell",
+      "command": "npx",
+      "args": ["textlint", "${file}"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [
+        {
+          "owner": "textlint",
+          "fileLocation": "absolute",
+          "pattern": [
+            {
+              "regexp": "^(.+)$",
+              "file": 1
+            },
+            {
+              "regexp": "^\\s+(\\d+):(\\d+)\\s+(error|warning|info)\\s+(.+)\\s+(.+)$",
+              "line": 1,
+              "column": 2,
+              "severity": 3,
+              "message": 4,
+              "code": 5,
+              "loop": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "textlint all markdown",
+      "type": "shell",
+      "command": "npx",
+      "args": ["textlint", "**/*.md"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
+  ]
+}

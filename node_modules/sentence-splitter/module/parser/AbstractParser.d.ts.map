@@ -1,0 +1,1 @@
+{"version":3,"file":"AbstractParser.d.ts","sourceRoot":"","sources":["../../src/parser/AbstractParser.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,iBAAiB,CAAC;AAE7C,8BAAsB,cAAc;IAChC;;;OAGG;IACH,QAAQ,CAAC,IAAI,CAAC,MAAM,EAAE,UAAU,GAAG,OAAO;IAE1C,QAAQ,CAAC,IAAI,CAAC,MAAM,EAAE,UAAU,GAAG,IAAI;CAC1C"}

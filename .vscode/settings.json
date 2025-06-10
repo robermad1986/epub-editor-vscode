@@ -1,0 +1,8 @@
+{
+  "textlint.enable": true,
+  "textlint.run": "onType",
+  "textlint.nodePath": null,
+  "textlint.configPath": ".textlintrc",
+  "textlint.autoFixOnSave": false,
+  "textlint.trace.server": "verbose"
+}

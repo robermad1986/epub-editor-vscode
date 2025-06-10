@@ -1,0 +1,1 @@
+{"version":3,"file":"LanguageInterface.d.ts","sourceRoot":"","sources":["../../../src/parser/lang/LanguageInterface.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,QAAQ,GAAG;IACnB,aAAa,EAAE,MAAM,EAAE,CAAC;IACxB,yBAAyB,EAAE,MAAM,EAAE,CAAC;IACpC,iBAAiB,EAAE,MAAM,EAAE,CAAC;CAC/B,CAAC"}

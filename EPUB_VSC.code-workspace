@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "EPUB: El final del bosque - Maria Fasce",
+			"uri": "epub:/El final del bosque - Maria Fasce"
+		}
+	],
+	"settings": {
+		"textlint.run": "onType",
+		"textlint.nodePath": null,
+		"textlint.configPath": ".textlintrc",
+		"textlint.autoFixOnSave": false
+	}
+}

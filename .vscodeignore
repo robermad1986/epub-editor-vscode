@@ -1,0 +1,33 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+.nyc_output
+coverage
+
+# Exclude development and testing files
+eslint.config.mjs
+*.vsix
+COMPREHENSIVE-TESTING-REPORT.md
+FINAL-TESTING-COMPLETION-SUMMARY.md
+PLAN DE TESTING Usuario.md
+Plan de Migraciónmd.md
+Plan de Testing.md
+PROPUESTAS DE NUEVAS FUNCIONALIDADES.md
+VISUAL-TESTING-GUIDE.md
+prompt.md
+final-testing-cleanup-20250609-180007.tar.gz
+EPUB_VSC.code-workspace
+test-epub-valid.epub
+El final del bosque - Maria Fasce.epub
+**/*.ts
+vscode-extension-samples/**
+node_modules/.bin/**
+test.epub.mimetype
+sample.png
+eslint.config.mjs
