@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#4A90E2" stroke="#2E5E8C" stroke-width="4"/>
+  
+  <!-- Book shape -->
+  <rect x="32" y="36" width="64" height="56" fill="white" rx="4"/>
+  <rect x="36" y="40" width="56" height="4" fill="#4A90E2"/>
+  <rect x="36" y="48" width="48" height="2" fill="#666"/>
+  <rect x="36" y="54" width="52" height="2" fill="#666"/>
+  <rect x="36" y="60" width="44" height="2" fill="#666"/>
+  <rect x="36" y="66" width="50" height="2" fill="#666"/>
+  <rect x="36" y="72" width="40" height="2" fill="#666"/>
+  
+  <!-- AI symbol -->
+  <circle cx="80" cy="76" r="8" fill="#FF6B35"/>
+  <text x="80" y="81" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">AI</text>
+  
+  <!-- EPUB text -->
+  <text x="64" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">EPUB</text>
+</svg>

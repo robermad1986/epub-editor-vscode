@@ -5,6 +5,9 @@
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.80.0+-brightgreen)
 ![AI](https://img.shields.io/badge/AI-Powered-orange)
 ![Python](https://img.shields.io/badge/Python-3.7+-yellow)
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/Pishu.epub-editor?label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Pishu.epub-editor)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/Pishu.epub-editor)](https://marketplace.visualstudio.com/items?itemName=Pishu.epub-editor)
+[![GitHub Issues](https://img.shields.io/github/issues/robermad1986/epub-editor-vscode)](https://github.com/robermad1986/epub-editor-vscode/issues)
 
 A powerful Visual Studio Code extension that allows you to **create, edit, and manage EPUB files** directly within the familiar VS Code environment. Now featuring **native AI integration** for editorial content improvement and **enhanced user experience** with non-intrusive notifications. Edit your ebooks like any other project with full file system integration, syntax highlighting, auto-save functionality, and intelligent AI assistance.
 
@@ -223,19 +226,36 @@ Is there any functionality you'd like to see implemented?
 
 ### Installation
 
-1. **From VSIX** (recommended):
+#### **Option 1: VS Code Marketplace** ⭐ **RECOMMENDED**
 
+1. **From VS Code Extensions view**:
+   - Press `Ctrl+Shift+X` (Windows/Linux) or `Cmd+Shift+X` (Mac)
+   - Search for "EPUB Editor"
+   - Click **Install** on the extension by **Pishu**
+
+2. **From Command Line**:
    ```bash
-   code --install-extension epub-editor-0.1.6.vsix
+   code --install-extension pishu.epub-editor
    ```
-2. **From source**:
 
+3. **From VS Code Marketplace**:
+   - Visit: https://marketplace.visualstudio.com/items?itemName=pishu.epub-editor
+   - Click **Install**
+
+#### **Option 2: Manual Installation** (Advanced users)
+
+1. **From GitHub Releases**:
+   - Download latest `.vsix` from [Releases](https://github.com/robermad1986/epub-editor-vscode/releases)
+   - Install: `code --install-extension epub-editor-0.1.8.vsix`
+
+2. **From source**:
    ```bash
-   git clone <repository-url>
-   cd epub-vscode-extension
+   git clone https://github.com/robermad1986/epub-editor-vscode.git
+   cd epub-editor-vscode
    npm install
+   npm run compile
    npm run package
-   code --install-extension epub-editor-0.1.6.vsix
+   code --install-extension epub-editor-0.1.8.vsix
    ```
 
 ### Usage
@@ -595,11 +615,18 @@ The extension implements a custom `FileSystemProvider` that:
 
 ## 🔄 Installation & Updates
 
-### Installing from VSIX
+### Installing from VS Code Marketplace (Recommended)
+
+1. **Open VS Code**
+2. **Go to Extensions view** (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+3. **Search for**: `EPUB Editor`
+4. **Click Install** on the extension by `Pishu`
+
+### Installing from VSIX (Alternative)
 
 ```bash
-# Download the latest VSIX file
-code --install-extension epub-editor-0.1.7.vsix
+# Download the latest VSIX file from GitHub releases
+code --install-extension epub-editor-0.1.8.vsix
 ```
 
 ### Setting up AI Features

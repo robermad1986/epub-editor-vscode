@@ -1,10 +1,9 @@
 {
 	"name": "epub-editor",
 	"displayName": "EPUB Editor",
-	"description": "Edit EPUB files directly in VS Code with virtual file system support",
+	"description": "Edit EPUB files directly in VS Code with AI-powered assistance. Virtual file system, auto-save, and intelligent writing tools for authors and publishers.",
 	"version": "0.1.8",
 	"publisher": "Pishu",
-	"private": true,
 	"license": "MIT",
 	"repository": {
 		"type": "git",

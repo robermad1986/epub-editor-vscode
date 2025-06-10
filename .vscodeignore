@@ -31,3 +31,23 @@ node_modules/.bin/**
 test.epub.mimetype
 sample.png
 eslint.config.mjs
+
+# Additional excludes for marketplace
+EJEMPLO-MANEJO-AUTOMATICO-ISSUES.md
+COPILOT-MEJORAS-RESUMEN.md
+GITHUB-ACTIONS-DEBUG.md
+MARKETPLACE-PUBLICATION-GUIDE.md
+
+# Reduce node_modules size  
+node_modules/**/README.md
+node_modules/**/readme.md
+node_modules/**/CHANGELOG.md
+node_modules/**/LICENSE
+node_modules/**/license
+node_modules/**/.travis.yml
+node_modules/**/.npmignore
+node_modules/**/Makefile
+node_modules/**/test/**
+node_modules/**/tests/**
+node_modules/**/*.test.js
+node_modules/**/*.spec.js
