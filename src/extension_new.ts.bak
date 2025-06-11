@@ -1,0 +1,234 @@
+import * as vscode from 'vscode';
+import { EpubFileSystemProvider, EpubMetadata } from './fileSystemProvider';
+import { AIService } from './ai/aiService';
+import { AICommands } from './ai/aiCommands';
+import * as fs from 'fs';
+import * as path from 'path';
+
+export function activate(context: vscode.ExtensionContext) {
+	console.log('EPUB Editor activated');
+
+	// Show activation message
+	vscode.window.setStatusBarMessage('📚 EPUB Editor activado', 3000);
+
+	// Create the FileSystemProvider at the top level so all commands can access it
+	const epubFs = new EpubFileSystemProvider();
+	
+	// Create a status bar item for EPUB files
+	const epubStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	epubStatusBarItem.command = 'epub.openAsFolder';
+	epubStatusBarItem.text = '📚 Abrir como Carpeta Virtual';
+	epubStatusBarItem.tooltip = 'Clic para abrir este archivo EPUB como una carpeta virtual editable';
+	context.subscriptions.push(epubStatusBarItem);
+	
+	// Track the current EPUB file and notifications
+	let currentEpubFile = '';
+	let notifiedFiles = new Set<string>(); // Track files that have already shown notification
+	let currentNotification: Thenable<string | undefined> | null = null; // Track current notification
+	let lastCheckTime = 0; // Prevent excessive checks
+
+	// Initialize AI services
+	const aiService = new AIService(context);
+	const aiCommands = new AICommands(aiService);
+	
+	// Register AI commands
+	aiCommands.registerCommands(context);
+	
+	try {
+		context.subscriptions.push(vscode.workspace.registerFileSystemProvider('epub', epubFs, { 
+			isCaseSensitive: false,
+			isReadonly: false
+		}));
+		
+		// Function to check if current file is EPUB and show status bar
+		function checkCurrentFileForEpub(): boolean {
+			// Throttle checks to max once per second
+			const now = Date.now();
+			if (now - lastCheckTime < 1000) {
+				return false;
+			}
+			lastCheckTime = now;
+			
+			// Check all visible editors
+			const visibleEditors = vscode.window.visibleTextEditors;
+			let foundEpub = false;
+			let detectedFilePath = '';
+			
+			for (const editor of visibleEditors) {
+				if (editor.document.uri.scheme === 'file') {
+					const filePath = editor.document.uri.fsPath;
+					
+					if (filePath.toLowerCase().endsWith('.epub')) {
+						foundEpub = true;
+						detectedFilePath = filePath;
+						break;
+					}
+				}
+			}
+			
+			// Also check active editor specifically
+			const activeEditor = vscode.window.activeTextEditor;
+			if (!foundEpub && activeEditor && activeEditor.document.uri.scheme === 'file') {
+				const filePath = activeEditor.document.uri.fsPath;
+				
+				if (filePath.toLowerCase().endsWith('.epub')) {
+					foundEpub = true;
+					detectedFilePath = filePath;
+				}
+			}
+			
+			// Check workspace tabs for EPUB files (only if no editor found)
+			if (!foundEpub && vscode.window.tabGroups) {
+				for (const tabGroup of vscode.window.tabGroups.all) {
+					for (const tab of tabGroup.tabs) {
+						if (tab.input && typeof tab.input === 'object' && 'uri' in tab.input) {
+							const uri = (tab.input as any).uri as vscode.Uri;
+							if (uri && uri.scheme === 'file' && uri.fsPath.toLowerCase().endsWith('.epub')) {
+								foundEpub = true;
+								detectedFilePath = uri.fsPath;
+								break;
+							}
+						}
+					}
+					if (foundEpub) break;
+				}
+			}
+			
+			// Only update if there's actually a change in state
+			if (foundEpub && detectedFilePath !== currentEpubFile) {
+				// EPUB file found and it's a new one
+				console.log('[EPUB] New EPUB file detected:', detectedFilePath);
+				epubStatusBarItem.show();
+				vscode.commands.executeCommand('setContext', 'epub.fileOpen', true);
+				currentEpubFile = detectedFilePath;
+				
+				// Show notification only if this file hasn't been notified before
+				if (!notifiedFiles.has(detectedFilePath)) {
+					console.log('[EPUB] Showing notification for new file');
+					showEpubNotification(detectedFilePath);
+				} else {
+					console.log('[EPUB] File already notified, skipping notification');
+				}
+			} else if (!foundEpub && currentEpubFile !== '') {
+				// No EPUB files found and we had one before
+				console.log('[EPUB] No EPUB files detected, hiding status bar');
+				epubStatusBarItem.hide();
+				vscode.commands.executeCommand('setContext', 'epub.fileOpen', false);
+				currentEpubFile = '';
+				currentNotification = null;
+			}
+			
+			return foundEpub;
+		}
+		
+		// Function to show EPUB notification
+		function showEpubNotification(filePath: string): void {
+			if (currentNotification) {
+				// Don't show multiple notifications at once
+				return;
+			}
+			
+			const fileName = path.basename(filePath);
+			console.log('[EPUB] Creating notification for file:', fileName);
+			
+			try {
+				currentNotification = vscode.window.showInformationMessage(
+					`📚 Archivo EPUB detectado: "${fileName}". ¿Quieres abrirlo como una carpeta virtual editable?`,
+					'Abrir como Carpeta Virtual',
+					'No mostrar más para este archivo'
+				).then((selection) => {
+					currentNotification = null; // Clear the reference
+					
+					if (selection === 'Abrir como Carpeta Virtual') {
+						console.log('[EPUB] User chose to open as virtual folder');
+						// Add to notified files to prevent future notifications
+						notifiedFiles.add(filePath);
+						// Open as virtual folder
+						vscode.commands.executeCommand('epub.openAsFolder', vscode.Uri.file(filePath));
+					} else if (selection === 'No mostrar más para este archivo') {
+						console.log('[EPUB] User chose not to show again for this file');
+						// Add to notified files to prevent future notifications
+						notifiedFiles.add(filePath);
+					}
+					// If user dismisses without clicking, don't add to notified files
+					// so notification can appear again if they reopen the file
+					
+					return selection;
+				});
+				
+				console.log('[EPUB] Notification created successfully');
+			} catch (error) {
+				console.error('[EPUB] Error creating notification:', error);
+				currentNotification = null;
+			}
+		}
+		
+		// Listen for opened text documents to detect EPUB files
+		context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => {
+			if (document.uri.scheme === 'file' && 
+			    document.uri.fsPath.toLowerCase().endsWith('.epub')) {
+				console.log('[EPUB] Detected EPUB file opened via document:', document.uri.fsPath);
+				// Debounce the check
+				setTimeout(() => checkCurrentFileForEpub(), 100);
+			}
+		}));
+		
+		// Listen for visible editors changes with debouncing
+		let visibleEditorsTimeout: NodeJS.Timeout | null = null;
+		context.subscriptions.push(vscode.window.onDidChangeVisibleTextEditors((editors) => {
+			// Only check if the change might affect EPUB detection
+			const hasEpubEditor = editors.some(editor => 
+				editor.document.uri.scheme === 'file' && 
+				editor.document.uri.fsPath.toLowerCase().endsWith('.epub')
+			);
+			if (hasEpubEditor || currentEpubFile !== '') {
+				// Debounce to avoid rapid repeated calls
+				if (visibleEditorsTimeout) {
+					clearTimeout(visibleEditorsTimeout);
+				}
+				visibleEditorsTimeout = setTimeout(() => {
+					checkCurrentFileForEpub();
+					visibleEditorsTimeout = null;
+				}, 1000); // 1 second debounce
+			}
+		}));
+		
+		// Listen for active editor changes with debouncing
+		let activeEditorTimeout: NodeJS.Timeout | null = null;
+		context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor((editor) => {
+			// Only check if the new editor might be an EPUB or if we had an EPUB before
+			if ((editor && editor.document.uri.scheme === 'file' && 
+			     editor.document.uri.fsPath.toLowerCase().endsWith('.epub')) || 
+			    currentEpubFile !== '') {
+				// Debounce to avoid rapid repeated calls
+				if (activeEditorTimeout) {
+					clearTimeout(activeEditorTimeout);
+				}
+				activeEditorTimeout = setTimeout(() => {
+					checkCurrentFileForEpub();
+					activeEditorTimeout = null;
+				}, 800); // 800ms debounce
+			}
+		}));
+		
+		// Listen for tab changes with debouncing
+		let tabChangeTimeout: NodeJS.Timeout | null = null;
+		context.subscriptions.push(vscode.window.tabGroups.onDidChangeTabs((event) => {
+			// Debounce to avoid rapid repeated calls
+			if (tabChangeTimeout) {
+				clearTimeout(tabChangeTimeout);
+			}
+			tabChangeTimeout = setTimeout(() => {
+				checkCurrentFileForEpub();
+				tabChangeTimeout = null;
+			}, 1200); // 1.2 second debounce
+		}));
+		
+		// Check current file immediately on activation
+		setTimeout(() => {
+			console.log('[EPUB] Initial check on activation');
+			checkCurrentFileForEpub();
+		}, 1000);
+		
+		console.log('FileSystemProvider registered successfully');
+		console.log('AI services initialized');

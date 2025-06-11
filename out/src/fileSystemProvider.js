@@ -503,9 +503,24 @@ class EpubFileSystemProvider {
         console.log(`[EPUB] URI authority: "${uri.authority}"`);
         console.log(`[EPUB] Current EPUB name: "${this.currentEpubName}"`);
         console.log(`[EPUB] Root entries: ${this.root.entries.size}`);
+        // Extract EPUB name from URI path if currentEpubName is not set
+        let epubName = this.currentEpubName;
+        if (!epubName && uri.path) {
+            // The URI path starts with the EPUB name: /{epubName}/...
+            const pathMatch = uri.path.match(/^\/([^\/]+)/);
+            if (pathMatch) {
+                epubName = decodeURIComponent(pathMatch[1]);
+                console.log(`[EPUB] Extracted EPUB name from URI: "${epubName}"`);
+                // Set the currentEpubName if it's not set
+                if (!this.currentEpubName) {
+                    this.currentEpubName = epubName;
+                    console.log(`[EPUB] Set currentEpubName to: "${this.currentEpubName}"`);
+                }
+            }
+        }
         // Handle the authority part - if present, it should match the current EPUB
-        if (uri.authority && this.currentEpubName && uri.authority !== this.currentEpubName) {
-            console.log(`[EPUB] Authority mismatch: ${uri.authority} !== ${this.currentEpubName}`);
+        if (uri.authority && epubName && uri.authority !== epubName) {
+            console.log(`[EPUB] Authority mismatch: ${uri.authority} !== ${epubName}`);
             if (!silent) {
                 throw vscode.FileSystemError.FileNotFound(uri);
             }
@@ -513,10 +528,10 @@ class EpubFileSystemProvider {
         }
         let pathToProcess = uri.path;
         // If the path starts with the EPUB name (e.g., /BookName/file.txt), remove the EPUB name
-        if (this.currentEpubName && pathToProcess.startsWith(`/${this.currentEpubName}/`)) {
-            pathToProcess = pathToProcess.substring(this.currentEpubName.length + 1);
+        if (epubName && pathToProcess.startsWith(`/${epubName}/`)) {
+            pathToProcess = pathToProcess.substring(epubName.length + 1);
         }
-        else if (this.currentEpubName && pathToProcess === `/${this.currentEpubName}`) {
+        else if (epubName && pathToProcess === `/${epubName}`) {
             pathToProcess = '/';
         }
         const parts = pathToProcess.split('/').filter(part => part.length > 0);

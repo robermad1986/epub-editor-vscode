@@ -2,7 +2,7 @@
 	"name": "epub-editor",
 	"displayName": "EPUB Editor",
 	"description": "Edit EPUB files directly in VS Code with AI-powered assistance. Virtual file system, auto-save, and intelligent writing tools for authors and publishers.",
-	"version": "0.1.8",
+	"version": "0.1.13",
 	"publisher": "Pishu",
 	"license": "MIT",
 	"repository": {
@@ -29,6 +29,15 @@
 	},
 	"categories": [
 		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished",
+		"onFileSystem:file",
+		"onFileSystem:epub",
+		"onLanguage:epub",
+		"workspaceContains:**/*.epub",
+		"onCommand:vscode.openWith",
+		"onCommand:vscode.open"
 	],
 	"main": "./out/src/extension",
 	"contributes": {
@@ -138,6 +147,17 @@
 				"command": "epub.ai.modelInfo",
 				"title": "ℹ️ Información del modelo",
 				"category": "EPUB AI"
+			},
+			{
+				"command": "epub.openAsFolderButton",
+				"title": "📚 Abrir EPUB como Carpeta Virtual",
+				"category": "EPUB",
+				"icon": "$(book)"
+			},
+			{
+				"command": "epub.quickOpen",
+				"title": "🚀 EPUB: Abrir archivo actual como Carpeta Virtual",
+				"category": "EPUB"
 			}
 		],
 		"menus": {
@@ -151,8 +171,18 @@
 			"editor/context": [
 				{
 					"command": "epub.openAsFolder",
-					"when": "resourceExtname == .epub && resourceScheme == file",
-					"group": "navigation"
+					"when": "epub.fileOpen",
+					"group": "navigation@1"
+				},
+				{
+					"command": "epub.openAsFolder",
+					"when": "resourceExtname == .epub",
+					"group": "navigation@1"
+				},
+				{
+					"command": "epub.openAsFolder",
+					"when": "resourceFilename =~ /\\.epub$/",
+					"group": "navigation@1"
 				},
 				{
 					"command": "epub.ai.improveText",
@@ -178,6 +208,23 @@
 					"command": "epub.ai.summarizeText",
 					"when": "editorHasSelection && resourceScheme == epub",
 					"group": "epub-ai@5"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "epub.openAsFolderButton",
+					"when": "epub.fileOpen",
+					"group": "navigation@1"
+				},
+				{
+					"command": "epub.openAsFolderButton",
+					"when": "resourceExtname == .epub",
+					"group": "navigation@1"
+				},
+				{
+					"command": "epub.openAsFolderButton",
+					"when": "resourceFilename =~ /\\.epub$/",
+					"group": "navigation@1"
 				}
 			],
 			"commandPalette": [
@@ -242,6 +289,9 @@
 				},
 				{
 					"command": "epub.ai.modelInfo"
+				},
+				{
+					"command": "epub.quickOpen"
 				}
 			]
 		},
