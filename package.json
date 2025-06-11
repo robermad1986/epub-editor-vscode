@@ -1,7 +1,7 @@
 {
 	"name": "epub-editor",
 	"displayName": "EPUB Editor",
-	"description": "Edit EPUB files directly in VS Code with AI-powered assistance. Virtual file system, auto-save, and intelligent writing tools for authors and publishers.",
+	"description": "Professional EPUB editor for VS Code with AI integration. Create, edit, and manage EPUB files with virtual file system, auto-save, and intelligent writing assistance. Now with reliable context menu integration and 7 free AI models for content improvement.",
 	"version": "0.1.13",
 	"publisher": "Pishu",
 	"license": "MIT",
@@ -21,14 +21,25 @@
 		"publishing",
 		"virtual-file-system",
 		"openrouter",
-		"writing-assistant"
+		"writing-assistant",
+		"authoring",
+		"content-creation",
+		"digital-publishing",
+		"book-editor",
+		"ai-writing",
+		"gemini",
+		"llama",
+		"file-system"
 	],
 	"engines": {
 		"vscode": "^1.80.0",
 		"python": ">=3.7.0"
 	},
 	"categories": [
-		"Other"
+		"Other",
+		"Language Packs",
+		"Machine Learning",
+		"Formatters"
 	],
 	"activationEvents": [
 		"onStartupFinished",

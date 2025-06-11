@@ -1,19 +1,27 @@
 # EPUB Editor for Visual Studio Code
 
-![Version](https://img.shields.io/badge/version-0.1.8-blue)
+![Version](https://img.shields.io/badge/version-0.1.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.80.0+-brightgreen)
 ![AI](https://img.shields.io/badge/AI-Powered-orange)
 ![Python](https://img.shields.io/badge/Python-3.7+-yellow)
-[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/Pishu.epub-editor?label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Pishu.epub-editor)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/Pishu.epub-editor)](https://marketplace.visualstudio.com/items?itemName=Pishu.epub-editor)
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/pishu.epub-editor?label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=pishu.epub-editor)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/pishu.epub-editor)](https://marketplace.visualstudio.com/items?itemName=pishu.epub-editor)
 [![GitHub Issues](https://img.shields.io/github/issues/robermad1986/epub-editor-vscode)](https://github.com/robermad1986/epub-editor-vscode/issues)
 
-A powerful Visual Studio Code extension that allows you to **create, edit, and manage EPUB files** directly within the familiar VS Code environment. Now featuring **native AI integration** for editorial content improvement and **enhanced user experience** with non-intrusive notifications. Edit your ebooks like any other project with full file system integration, syntax highlighting, auto-save functionality, and intelligent AI assistance.
+A powerful Visual Studio Code extension that allows you to **create, edit, and manage EPUB files** directly within the familiar VS Code environment. Now featuring **native AI integration** for editorial content improvement and **enhanced user experience** with reliable EPUB file handling. Edit your ebooks like any other project with full file system integration, syntax highlighting, auto-save functionality, and intelligent AI assistance.
 
 ## ✨ Features
 
-### 🔔 **Enhanced User Experience** ⭐ **NEW in v0.1.8**
+### 🎯 **Reliable EPUB Integration** ⭐ **NEW in v0.1.13**
+
+- **🚀 Fixed Context Menu**: Reliable "Open as Virtual Folder" option for EPUB files
+- **⚡ Instant Access**: No more manual extension toggle required
+- **🔄 Race Condition Resolved**: Proper FileSystemProvider synchronization
+- **📂 Seamless Workflow**: Open EPUB files directly from any VS Code window
+- **🎯 Zero Configuration**: Works immediately after installation
+
+### 🔔 **Enhanced User Experience** ⭐ **Improved in v0.1.8-0.1.13**
 
 - **🚀 Non-Intrusive Notifications**: All routine notifications now auto-dismiss without manual intervention
 - **⏱️ Smart Status Bar Messages**: Intelligent timing for different message types

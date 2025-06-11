@@ -2,6 +2,29 @@
 
 All notable changes to the EPUB Editor extension will be documented in this file.
 
+## [0.1.13] - 2025-06-11
+### 🎯 Critical Fix: EPUB Context Menu Race Condition Resolved
+
+#### **✨ Major Stability Improvement**
+- **🚀 Fixed "Open as Virtual Folder" Context Menu**: Reliable access to EPUB files in all scenarios
+- **⚡ Resolved Race Condition**: Proper FileSystemProvider synchronization prevents undefined states
+- **🔄 Instant Availability**: No more need to manually disable/enable extension for context menu to appear
+- **📂 Universal Compatibility**: Works correctly when opening EPUB files in new VS Code windows
+- **🎯 Zero Configuration**: Extension works immediately upon installation
+
+#### **🔧 Technical Improvements**
+- **Synchronization Delay**: Added 100ms delay between EPUB loading and workspace folder creation
+- **FileSystemProvider Timing**: Ensures `currentEpubName` is properly set before VS Code accesses virtual file system
+- **Activation Events**: Optimized activation events for better performance and reliability
+- **Error Prevention**: Eliminates "File not found" errors during EPUB workspace initialization
+- **Logging Enhancement**: Improved debugging output for better issue tracking
+
+#### **💡 User Benefits**
+- **Seamless Experience**: Right-click on any EPUB file and immediately see "Open as Virtual Folder" option
+- **Reliability**: Consistent behavior across different VS Code usage scenarios
+- **No Workarounds**: Eliminates need for manual extension management
+- **Professional Workflow**: Works as expected for publishing and editing workflows
+
 ## [0.1.8] - 2025-06-10
 ### 🔔 Improved User Experience: Non-Intrusive Notifications
 
