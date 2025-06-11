@@ -9,51 +9,70 @@
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/pishu.epub-editor)](https://marketplace.visualstudio.com/items?itemName=pishu.epub-editor)
 [![GitHub Issues](https://img.shields.io/github/issues/robermad1986/epub-editor-vscode)](https://github.com/robermad1986/epub-editor-vscode/issues)
 
-A powerful Visual Studio Code extension that allows you to **create, edit, and manage EPUB files** directly within the familiar VS Code environment. Now featuring **native AI integration** for editorial content improvement and **enhanced user experience** with reliable EPUB file handling. Edit your ebooks like any other project with full file system integration, syntax highlighting, auto-save functionality, and intelligent AI assistance.
+A powerful Visual Studio Code extension that allows you to **create, edit, and manage EPUB files** directly within VS Code. **Now with RELIABLE context menu integration** - the critical race condition has been fixed in v0.1.13! Features **native AI integration** with 7 free AI models, **auto-save functionality**, and **seamless EPUB editing experience**. 
+
+🎯 **LATEST UPDATE v0.1.13**: Fixed the context menu race condition - "Open as Virtual Folder" now works reliably every time without manual extension management!
+
+🎯 **LATEST UPDATE v0.1.13**: Fixed the context menu race condition - "Open as Virtual Folder" now works reliably every time without manual extension management!
 
 ## ✨ Features
 
-### 🎯 **Reliable EPUB Integration** ⭐ **NEW in v0.1.13**
+### 🚀 **CRITICAL FIX v0.1.13** - Context Menu Race Condition Resolved ⭐
 
-- **🚀 Fixed Context Menu**: Reliable "Open as Virtual Folder" option for EPUB files
-- **⚡ Instant Access**: No more manual extension toggle required
-- **🔄 Race Condition Resolved**: Proper FileSystemProvider synchronization
-- **📂 Seamless Workflow**: Open EPUB files directly from any VS Code window
-- **🎯 Zero Configuration**: Works immediately after installation
+**Finally! The most requested fix is here:**
+- ✅ **"Open as Virtual Folder" works immediately** - Right-click any EPUB file and the context menu appears every time
+- ✅ **No more manual extension management** - No need to disable/enable the extension anymore  
+- ✅ **Works in new VS Code windows** - Perfect reliability when opening EPUB files in fresh VS Code instances
+- ✅ **Zero configuration required** - Install and use immediately
+- ✅ **Professional workflow support** - Reliable for daily publishing and editing tasks
 
-### 🔔 **Enhanced User Experience** ⭐ **Improved in v0.1.8-0.1.13**
+This was the #1 user-reported issue - now completely resolved with proper FileSystemProvider synchronization!
 
-- **🚀 Non-Intrusive Notifications**: All routine notifications now auto-dismiss without manual intervention
-- **⏱️ Smart Status Bar Messages**: Intelligent timing for different message types
-- **📍 Seamless Workflow**: Focus on writing without notification interruptions
-- **🎯 Selective Modality**: Only critical dialogs require user interaction
-- **📂 Direct Context Menu Access**: Open EPUB files directly from file explorer without additional dialogs
+### 🧠 **7 Free AI Models for Content Enhancement** ⭐
 
-### 📚 **Complete EPUB Authoring**
+Choose from powerful AI models for editorial assistance:
+- **Gemini 2.0 Flash Experimental** (1M context) - Latest Google model
+- **NVIDIA Llama 3.1 Nemotron Ultra** (253B parameters) - Largest available
+- **Qwen3 235B** (256K context) - Massive context window
+- **DeepSeek R1** (128K context) - Advanced reasoning
+- **Microsoft Phi-4 Reasoning Plus** - Complex reasoning specialist
+- **Hermes 3 Llama 405B** - Ultra-powerful 405B parameters
+- **Qwen3 8B** - Fast and efficient balance
 
-- **Create new EPUB files** from scratch with guided setup
-- **Open existing EPUB files** as virtual workspace folders
-- **Edit all EPUB content** (XHTML, CSS, XML, images) directly in VS Code
-- **Auto-save functionality** with automatic backup creation
+### 🎯 **Complete EPUB Workspace Integration**
 
-### 🧠 **AI-Powered Editorial Assistant** ⭐ **UPDATED in v0.1.7**
+- **Virtual File System**: EPUB files appear as normal project folders in VS Code
+- **Direct File Editing**: Edit XHTML, CSS, XML, and images with full VS Code features
+- **Auto-save with Backups**: Automatic saving with backup creation for safety
+- **Syntax Highlighting**: Full IntelliSense and syntax support for all EPUB formats
+- **Git Integration**: Version control your EPUB projects like any other codebase
 
-- **🤖 Multiple AI Models**: Choose from 7 powerful free AI models optimized for different tasks
-  - **Gemini 2.0 Flash Experimental** (1M context) - Latest Google model, perfect for long documents
-  - **NVIDIA Llama 3.1 Nemotron Ultra 253B** (128K context) - The largest model available (253B parameters)
-  - **Qwen3 235B** (256K context) - Second largest model with massive context window (235B parameters)
-  - **DeepSeek R1** (128K context) - Excellent reasoning and advanced capabilities
-  - **Microsoft Phi-4 Reasoning Plus** (128K context) - Specialized in complex reasoning tasks
-  - **Hermes 3 Llama 405B** (128K context) - Ultra-powerful model with 405B parameters
-  - **Qwen3 8B** (32K context) - Fast and efficient with excellent speed/quality balance
-- **🎯 Editorial AI Functions**:
-  - 🧠 **Text Improvement**: Enhance narrative flow and literary style
-  - ✏️ **Grammar Correction**: Fix spelling and grammar without altering style
-  - 🌐 **Smart Translation**: Contextual translation maintaining EPUB formatting
-  - 📝 **Content Expansion**: Add depth and detail to existing paragraphs
-  - 📄 **Intelligent Summarization**: Create concise summaries of selected content
-- **🎨 Context Menu Integration**: Right-click access to all AI functions when text is selected
-- **⚙️ Smart Configuration**: Secure API key storage, model selection interface, language preferences
+### 🔔 **Enhanced User Experience**
+
+- **Smart Notifications**: Auto-dismissing messages that don't interrupt your workflow
+- **Status Bar Integration**: Key information displayed elegantly in the status bar
+- **Selective Modality**: Only critical dialogs require user interaction
+- **Clean Interface**: Focus on writing without notification clutter
+
+### 📚 **EPUB Creation & Management**
+
+- **Create New EPUBs**: Start from scratch with guided metadata setup
+- **Open Existing Files**: Any EPUB file becomes a VS Code workspace
+- **Professional Editing**: Edit all content types with full VS Code capabilities
+- **Auto-save & Backups**: Never lose your work with intelligent save management
+
+### 🧠 **AI Editorial Assistant** - 7 Free Models Available
+
+**Powerful AI features via OpenRouter:**
+- 🧠 **Text Improvement** - Enhance narrative flow and style
+- ✏️ **Grammar Correction** - Fix errors while preserving your voice  
+- 🌐 **Smart Translation** - Context-aware translation
+- 📝 **Content Expansion** - Add depth to paragraphs
+- 📄 **Summarization** - Create concise summaries
+
+**Available Models**: Gemini 2.0, NVIDIA Llama Ultra (253B), Qwen3 (235B), DeepSeek R1, Microsoft Phi-4, Hermes 3 (405B), Qwen3 8B
+
+**Access**: Right-click any selected text for instant AI assistance
 - **🔧 AI Management**: Test connections, switch models, view model information
 
 ### 🎯 **Core Capabilities**
