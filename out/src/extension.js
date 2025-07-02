@@ -5,6 +5,7 @@ const vscode = require("vscode");
 const fileSystemProvider_1 = require("./fileSystemProvider");
 const aiService_1 = require("./ai/aiService");
 const aiCommands_1 = require("./ai/aiCommands");
+const epubPreviewProvider_1 = require("./preview/epubPreviewProvider");
 const fs = require("fs");
 const path = require("path");
 function activate(context) {
@@ -26,13 +27,17 @@ function activate(context) {
     // Initialize AI services
     const aiService = new aiService_1.AIService(context);
     const aiCommands = new aiCommands_1.AICommands(aiService);
+    // Initialize EPUB Preview
+    const previewProvider = new epubPreviewProvider_1.EpubPreviewProvider(context.extensionUri, context);
     // Register AI commands
     aiCommands.registerCommands(context);
     try {
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('epub', epubFs, {
             isCaseSensitive: false,
             isReadonly: false
-        })); // Function to check if current file is EPUB and show status bar
+        }));
+        // Register preview provider
+        context.subscriptions.push(vscode.window.registerWebviewViewProvider(epubPreviewProvider_1.EpubPreviewProvider.viewType, previewProvider)); // Function to check if current file is EPUB and show status bar
         function checkCurrentFileForEpub() {
             // Clear any existing timer
             if (detectionDebounceTimer) {
@@ -513,6 +518,62 @@ Identifier: ${metadata.identifier || 'N/A'}
             else {
                 // Fallback: show file picker
                 await vscode.commands.executeCommand('epub.openAsFolder');
+            }
+        }));
+        // Command to open EPUB preview
+        context.subscriptions.push(vscode.commands.registerCommand('epub.preview', async (uri) => {
+            let epubPath;
+            console.log(`[EPUB Preview] Preview command called`);
+            // Determine EPUB path
+            if (uri) {
+                epubPath = uri.fsPath;
+                console.log(`[EPUB Preview] Using provided URI: ${epubPath}`);
+            }
+            else {
+                // Try to get the currently active editor's document
+                const activeEditor = vscode.window.activeTextEditor;
+                if (activeEditor && activeEditor.document.uri.scheme === 'file' &&
+                    activeEditor.document.uri.fsPath.toLowerCase().endsWith('.epub')) {
+                    epubPath = activeEditor.document.uri.fsPath;
+                    console.log(`[EPUB Preview] Using active editor file: ${epubPath}`);
+                }
+                else {
+                    // Show file picker dialog
+                    const options = {
+                        canSelectMany: false,
+                        openLabel: 'Preview EPUB File',
+                        filters: {
+                            'EPUB files': ['epub']
+                        }
+                    };
+                    const fileUri = await vscode.window.showOpenDialog(options);
+                    if (!fileUri || !fileUri[0]) {
+                        return; // User cancelled
+                    }
+                    epubPath = fileUri[0].fsPath;
+                    console.log(`[EPUB Preview] Using file picker result: ${epubPath}`);
+                }
+            }
+            // Validate it's an EPUB file
+            if (!epubPath || !epubPath.toLowerCase().endsWith('.epub')) {
+                vscode.window.showErrorMessage('Por favor selecciona un archivo EPUB válido.');
+                return;
+            }
+            // Check if file exists
+            if (!fs.existsSync(epubPath)) {
+                console.error(`[EPUB Preview] File not found at path: ${epubPath}`);
+                vscode.window.showErrorMessage(`Archivo EPUB no encontrado: ${epubPath}`);
+                return;
+            }
+            try {
+                // Show preview panel
+                await vscode.commands.executeCommand('workbench.view.extension.epub-preview');
+                // Load EPUB in preview
+                await previewProvider.loadEpub(epubPath);
+            }
+            catch (error) {
+                console.error(`[EPUB Preview] Error opening preview:`, error);
+                vscode.window.showErrorMessage(`Error opening EPUB preview: ${error}`);
             }
         }));
         console.log('All EPUB commands registered successfully');

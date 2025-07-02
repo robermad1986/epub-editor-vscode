@@ -1,8 +1,8 @@
 {
 	"name": "epub-editor",
 	"displayName": "EPUB Editor",
-	"description": "Professional EPUB editor for VS Code with AI integration. Create, edit, and manage EPUB files with virtual file system, auto-save, and intelligent writing assistance. Now with reliable context menu integration and 7 free AI models for content improvement.",
-	"version": "0.1.13",
+	"description": "Professional EPUB editor for VS Code with AI integration and real-time preview. Create, edit, and manage EPUB files with virtual file system, auto-save, intelligent writing assistance, and interactive EPUB preview powered by epub.js. Now with 7 free AI models and live preview capabilities.",
+	"version": "0.1.14",
 	"publisher": "Pishu",
 	"license": "MIT",
 	"repository": {
@@ -29,7 +29,11 @@
 		"ai-writing",
 		"gemini",
 		"llama",
-		"file-system"
+		"file-system",
+		"preview",
+		"epub-viewer",
+		"real-time-preview",
+		"epubjs"
 	],
 	"engines": {
 		"vscode": "^1.80.0",
@@ -169,6 +173,11 @@
 				"command": "epub.quickOpen",
 				"title": "🚀 EPUB: Abrir archivo actual como Carpeta Virtual",
 				"category": "EPUB"
+			},
+			{
+				"command": "epub.preview",
+				"title": "👁️ Vista Previa EPUB",
+				"category": "EPUB"
 			}
 		],
 		"menus": {
@@ -177,6 +186,11 @@
 					"command": "epub.openAsFolder",
 					"when": "resourceExtname == .epub",
 					"group": "navigation"
+				},
+				{
+					"command": "epub.preview",
+					"when": "resourceExtname == .epub",
+					"group": "navigation@2"
 				}
 			],
 			"editor/context": [
@@ -236,6 +250,11 @@
 					"command": "epub.openAsFolderButton",
 					"when": "resourceFilename =~ /\\.epub$/",
 					"group": "navigation@1"
+				},
+				{
+					"command": "epub.preview",
+					"when": "resourceExtname == .epub",
+					"group": "navigation@2"
 				}
 			],
 			"commandPalette": [
@@ -303,6 +322,9 @@
 				},
 				{
 					"command": "epub.quickOpen"
+				},
+				{
+					"command": "epub.preview"
 				}
 			]
 		},
@@ -372,6 +394,25 @@
 					"description": "Habilitar funcionalidades de IA en EPUB Editor"
 				}
 			}
+		},
+		"views": {
+			"epub-preview": [
+				{
+					"id": "epub.preview",
+					"name": "Vista Previa EPUB",
+					"type": "webview",
+					"icon": "$(book)"
+				}
+			]
+		},
+		"viewsContainers": {
+			"panel": [
+				{
+					"id": "epub-preview",
+					"title": "EPUB Preview",
+					"icon": "$(book)"
+				}
+			]
 		}
 	},
 	"scripts": {
@@ -399,7 +440,8 @@
 		"@types/jszip": "^3.4.0",
 		"@types/uuid": "^10.0.0",
 		"jszip": "^3.10.1",
-		"uuid": "^11.1.0"
+		"uuid": "^11.1.0",
+		"epubjs": "^0.3.93"
 	},
 	"extensionDependencies": []
 }
